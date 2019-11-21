@@ -1,24 +1,63 @@
-var a = {
-    name: "Almas",
-    age: 16,
-    gpa: 1.9,
-    group: "IT-1911"
-}
+const express = require('express');
+const app = express();
 
-var b = {
-    name: "Nurlan",
-    age: 18,
-    gpa: 3.4,
-    group: "IT-1911"
-}
+const { Pool } = require('pg');
 
-var c = {
-    name: "Zhandaulet",
-    age: 17,
-    gpa: 1.1,
-    group: "IT-1912"
-}
+const connection = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'kek',
+    password: 'postgres',
+    port: 5432
+});
 
-var arr = [a,b,c];
+app.get("/getSomeData", 
+    (request, response) => {
+        connection.query("select * from todos", 
+            (err, res) => {
+                if (err) {
+                    response.json({ message: "error" });
+                } else {
+                    response.json(res.rows);
+                }
+            });
+    });
 
-console.log(arr);
+app.get("/delete/:id", (request, response) => {
+
+    connection.query(
+        "delete from todos where id = $1",
+        [ request.params.id ],
+        (err, res) => {
+            if (err) {
+                response.json(err);
+            } else {
+                response.json({ message: "successfully deleted" });
+            }
+        }
+    );
+
+});
+
+app.get("/create/:description", (request, response) => {
+
+    connection.query(
+        "insert into todos(desciption) values($1)",
+        [
+            request.params.description
+        ],
+        (err, res) => {
+            if (err) {
+                response.json(err);
+            } else {
+                response.json({ message: "successfully created" });
+            }
+        }
+    );
+
+});
+    
+app.listen(8080,
+    () => { 
+        console.log("successfully running"); 
+    });
