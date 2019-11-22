@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/akhatnya/practice1112#readme",
   "devDependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "pg": "^7.13.0"
   }

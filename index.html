@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <title>
+            Practice 1911 1912
+        </title>
+    </head>  
+    <body>
+        <ul id="myElement">
+            <li>IT-1911</li>
+            <li>IT-1912</li>
+        </ul>
+
+        <script>
+            async function removeMyItemById(itemId){
+                var response = await fetch(`http://localhost:8080/delete/${itemId}`); 
+                // ${itemId} - айди элемента, который надо удалить. 
+                // его значение прилетает в аргументах этой функции
+
+                var data = await response.json();
+                // так же вытаскиеваем тело ответа в формате json
+
+                if (data && data.message === "successfully deleted") {
+                    // если все ок удалилось, то мне из бэка приходит объект с полем message
+                    // знание которого "successfully deleted"
+                    // в js для сравнения стрингов используется 3 знака равно
+
+                    await getData();
+                    // тут мы заново подгружаем данные
+
+                    alert("норм удалилось");
+                    // тут 
+                } else {
+                    alert("ашипка");
+                    // кейс, когда вышла ошибка. 
+                }
+            }
+
+            async function getData(){
+                var response = await fetch("http://localhost:8080/getSomeData");
+                var data = await response.json();
+                var el = document.getElementById("myElement");
+                el.innerHTML = "";
+                
+                for (var i = 0; i < data.length; i++) {
+                    el.innerHTML += `
+                        <li>
+                            ${data[i].desciption}
+                            <button onclick="removeMyItemById(${data[i].id})" > удалить </button>
+                        </li>`;
+                        // тут у тэга button прокидываем в атрибуту onclick функцию, которая расписана выше
+                        // ${data[i].id} - тут указываете поле id вашего объекта, если оно есть
+                        // если нет, то надо указать любое уникальное значение вашего объекта
+                        // по которому будем удалять из базы
+                        // в итоге по нажатию на эту кнопку - будет вызываться removeMyItemById
+                        // с айди которым в него присвоили. вы можете нажать на кнопку
+                        // правой кнопкой мышки и "инспектировать" элемент, там будет видно html того, что вышло
+                }
+            }
+            getData();
+        </script>
+    </body> 
+</html>
